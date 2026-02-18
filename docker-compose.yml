@@ -1,0 +1,33 @@
+version: "3.8"
+
+services:
+  db:
+    image: postgres:16-alpine
+    restart: always
+    environment:
+      POSTGRES_USER: showcase_user
+      POSTGRES_PASSWORD: showcase_pass
+      POSTGRES_DB: showcase_db
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  app:
+    build: .
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      DATABASE_URL: postgresql://showcase_user:showcase_pass@db:5432/showcase_db
+      JWT_SECRET: super-secret-jwt-key-change-in-production
+      ADMIN_EMAIL: admin@showcase.com
+      ADMIN_PASSWORD: admin123
+    depends_on:
+      - db
+    volumes:
+      - uploads:/app/uploads
+
+volumes:
+  pgdata:
+  uploads:
